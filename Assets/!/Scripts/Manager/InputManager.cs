@@ -3,13 +3,14 @@ using System.Collections;
 using DesignPattern;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using LongNC.Fruit;
+using LongNC.Items;
 
 namespace LongNC.Cube
 {
     public interface IInputManager
     {
-        Transform GetItems();
+        Transform GetItemIdle();
+        Transform GetItemMoving();
     }
     
     public class InputManager : Singleton<InputManager>, IInputManager
@@ -17,14 +18,15 @@ namespace LongNC.Cube
         private bool _isCanControl;
         private RaycastHit[] _hits = new RaycastHit[10];
         private Coroutine _coroutine;
-        private Fruits _fruits;
+        private IItemIdleBase _itemIdle;
+        private IItemMovingBase _itemMoving;
 
         private void OnEnable()
         {
             _isCanControl = true;
         }
 
-        public Transform GetItems()
+        public Transform GetItemIdle()
         {
             Transform ans = null;
             if (Camera.main == null)
@@ -39,7 +41,31 @@ namespace LongNC.Cube
             {
                 var hit = _hits[i];
                 // Debug.Log(hit.collider.gameObject.name);
-                if (hit.transform.TryGetComponent<Fruits>(out var fruit))
+                if (hit.transform.TryGetComponent<IItemIdleBase>(out var itemIdle))
+                {
+                    ans = hit.transform;
+                    break;
+                }
+            }
+            return ans;
+        }
+
+        public Transform GetItemMoving()
+        {
+            Transform ans = null;
+            if (Camera.main == null)
+            {
+                Debug.LogWarning("No Main Camera");
+                return null;
+            }
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var size = Physics.RaycastNonAlloc(ray, _hits, Mathf.Infinity);
+            
+            for (var i = 0; i < size; ++ i)
+            {
+                var hit = _hits[i];
+                // Debug.Log(hit.collider.gameObject.name);
+                if (hit.transform.TryGetComponent<IItemMovingBase>(out var itemMoving))
                 {
                     ans = hit.transform;
                     break;
@@ -54,30 +80,53 @@ namespace LongNC.Cube
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    var items = GetItems();
-                    if (items == null)
+                    var itemMoving = GetItemMoving();
+                    if (itemMoving == null)
                     {
                         return;
                     }
-                    _fruits = items.GetComponent<Fruits>();
-                    if (_fruits.IsCanMove)
+                    _itemMoving = itemMoving.GetComponent<IItemMovingBase>();
+                    if (_itemMoving.IsCanMove)
                     {
-                        _fruits.OnClickDown();
+                        _itemMoving.OnClickDown();
                     }
                 }
                 else if (Input.GetMouseButton(0))
                 {
-                    if (_fruits != null && _fruits.IsCanMove)
+                    if (_itemMoving is { IsCanMove: true })
                     {
-                        _fruits.OnDrag();
+                        _itemMoving.OnDrag();
+                        var itemIdle = GetItemIdle();
+                        if (itemIdle == null)
+                        {
+                            return;
+                        }
+
+                        _itemIdle = itemIdle.GetComponent<IItemIdleBase>();
+                        _itemIdle.OnHover(_itemMoving);
                     }
                 }
                 else if (Input.GetMouseButtonUp(0))
                 {
-                    if (_fruits != null && _fruits.IsCanMove)
+                    if (_itemMoving is { IsCanMove: true })
                     {
-                        _fruits.OnDrop();
-                        _fruits = null;
+                        var itemIdle = GetItemIdle();
+                        if (itemIdle == null)
+                        {
+                            _itemMoving.OnDrop();
+                            return;
+                        }
+
+                        _itemIdle = itemIdle.GetComponent<IItemIdleBase>();
+                        if (_itemIdle.OnTake(_itemMoving))
+                        {
+                            _itemMoving.OnClickTake();
+                        }
+                        else
+                        {
+                            _itemMoving.OnDrop();
+                        }
+                        _itemMoving = null;
                     }
                 }
             }

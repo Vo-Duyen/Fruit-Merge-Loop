@@ -2,20 +2,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DesignPattern.Observer;
 using DG.Tweening;
+using LongNC.Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.LightTransport;
 
 namespace LongNC
 {
-    public class ItemBase<TState> : SerializedMonoBehaviour
+    public interface IItemBase
+    {
+        Transform GetTransform();
+        bool IsState<T>(T t);
+        bool IsState<T>(params T[] t);
+        bool IsType<T>(T t);
+        bool IsType<T>(params T[] t);
+        TType GetItemType<TType>();
+        void ChangeState<T>(T t);
+    }
+    public class ItemBase<TState, TType> : SerializedMonoBehaviour, IItemBase
         where TState : Enum
+        where TType : Enum
     {
         [OdinSerialize] protected TState _state;
+        [OdinSerialize] protected TType _type;
         [OdinSerialize] protected Collider _collider;
+        
+        protected ObserverManager<GameEvent> Observer = ObserverManager<GameEvent>.Instance;
 
         public Transform TF => transform;
+
+        public Transform GetTransform()
+        {
+            return TF;
+        }
 
         public virtual bool IsState<T>(T t)
         {
@@ -26,13 +48,26 @@ namespace LongNC
         {
             return t.Any(IsState);
         }
+        
+        public virtual bool IsType<T>(T t)
+        {
+            return _type.Equals((TType)(object)t);
+        }
+        
+        public virtual bool IsType<T>(params T[] t)
+        {
+            return t.Any(IsType);
+        }
+
+        public TType GetItemType<TType>()
+        {
+            return (TType)(object)_type;
+        }
 
         public virtual void ChangeState<T>(T t)
         {
             _state = (TState)(object)t;
         }
-
-        
         
 #if UNITY_EDITOR
         [Button]

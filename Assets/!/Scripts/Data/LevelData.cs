@@ -2,6 +2,7 @@
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace LongNC.Data
 {
@@ -9,8 +10,18 @@ namespace LongNC.Data
     public class LevelData : SerializedScriptableObject
     {
         public int levelId;
-        public int cntPlatforms;
-        public int cntFruitPlatforms;
+        public MapType mapType;
+        public List<(int, int)> arrFruitCore = new List<(int, int)>();
+        public int cntFruitQueue;
         public List<int> arrFruit = new List<int>();
+        public int pointWin;
+    }
+
+    public enum MapType
+    {
+        Circle,
+        Square,
+        HorizontalOval,
+        VerticalOval,
     }
 }

@@ -4,13 +4,24 @@ using UnityEngine;
 
 namespace LongNC
 {
-    public class ItemMovingBase<TState> : ItemBase<TState>
+    public interface IItemMovingBase : IItemBase
+    {
+        bool IsCanMove { get; }
+        void OnClickDown();
+        void OnDrag();
+        void OnClickTake();
+        void OnDrop();
+        void OnBack();
+        void OnSavePoint(float timeDelay = 0f);
+    }
+    public class ItemMovingBase<TState, TType> : ItemBase<TState, TType>, IItemMovingBase
         where TState : System.Enum
+        where TType : System.Enum
     {
         [OdinSerialize] protected bool _isBackOnDrop = true;
         private Vector3 _savePosition;
         protected Vector3 _scaleClick = new Vector3(1.2f, 1.2f, 1.2f);
-        private Vector3 _pivot;
+        protected Vector3 _pivot;
         public virtual bool IsCanMove => false;
 
         protected virtual void OnEnable()
@@ -42,6 +53,11 @@ namespace LongNC
             posMouse.z = Camera.main.WorldToScreenPoint(TF.position).z;
             var posMouseInWorld = Camera.main.ScreenToWorldPoint(posMouse);
             TF.position = posMouseInWorld + _pivot;
+        }
+
+        public virtual void OnClickTake()
+        {
+            TF.DOScale(Vector3.one, 0.2f);
         }
         
         public virtual void OnDrop()

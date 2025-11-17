@@ -21,15 +21,138 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
-    - Name: levelId
+    - Name: arrFruitCore
+      Entry: 7
+      Data: 0|System.Collections.Generic.List`1[[System.ValueTuple`2[[System.Int32,
+        mscorlib],[System.Int32, mscorlib]], mscorlib]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 9
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
       Entry: 3
       Data: 0
-    - Name: cntPlatforms
+    - Name: Item2
       Entry: 3
-      Data: 0
-    - Name: fruits
-      Entry: 6
+      Data: 1
+    - Name: 
+      Entry: 8
       Data: 
-  levelId: 0
-  cntPlatforms: 0
-  fruits: {fileID: 0}
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 1
+    - Name: Item2
+      Entry: 3
+      Data: 2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 2
+    - Name: Item2
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 3
+    - Name: Item2
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 4
+    - Name: Item2
+      Entry: 3
+      Data: 5
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 5
+    - Name: Item2
+      Entry: 3
+      Data: 6
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 6
+    - Name: Item2
+      Entry: 3
+      Data: 7
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 7
+    - Name: Item2
+      Entry: 3
+      Data: 8
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 8
+    - Name: Item2
+      Entry: 3
+      Data: 9
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  levelId: 1
+  mapType: 0
+  cntFruitQueue: 1
+  arrFruit: 01000000020000000300000004000000
+  pointWin: 10
