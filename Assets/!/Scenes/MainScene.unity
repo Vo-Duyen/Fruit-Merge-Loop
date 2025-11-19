@@ -427,11 +427,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2fafdda0934528b22837a4824f951b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _backgroundObj: {fileID: 392338051010916351, guid: c9898da353160b94bbad0615fc2ce6b2, type: 3}
-  _platformQueueObj: {fileID: 4932820316331777949, guid: e773525389793dd43b6f9ebf36786d82, type: 3}
-  _posPlatformQueue: {x: 0, y: -1.7, z: 0.4}
-  _maps:
-  - {fileID: 7373246932085317127, guid: 9ecb9c5bb680def458dd4e14f63c9824, type: 3}
   _fruitObj:
   - {fileID: 2165145189584368777, guid: 58a7fb9067b7cff4ab89b989f12e6a84, type: 3}
   - {fileID: 6146920146736502525, guid: 285ccccfe9048db4b875118abedf3747, type: 3}
@@ -442,14 +437,21 @@ MonoBehaviour:
   - {fileID: 4406265782506650733, guid: b2041d1372649a243b8cab4c56d36327, type: 3}
   - {fileID: 6666861414390529804, guid: d62963069502c01439d71c6985b779b7, type: 3}
   - {fileID: 1181909876966836265, guid: 269ee9c9593571c41832581445335313, type: 3}
-  _platformTransforms: []
-  _arrFruit: 
-  _cntFruitQueue: 0
+  _currentLevelTrans: {fileID: 0}
+  _parentFruitInMap: {fileID: 0}
+  _parentFruitInQueue: {fileID: 0}
   _parentPlatformQueue: {fileID: 0}
+  _backgroundObj: {fileID: 392338051010916351, guid: c9898da353160b94bbad0615fc2ce6b2, type: 3}
+  _platformQueueObj: {fileID: 4932820316331777949, guid: e773525389793dd43b6f9ebf36786d82, type: 3}
+  _posPlatformQueue: {x: 0, y: -1.7, z: 0.4}
+  _maps:
+  - {fileID: 7373246932085317127, guid: 9ecb9c5bb680def458dd4e14f63c9824, type: 3}
+  - {fileID: 3729369982806780987, guid: 7bb95f3c59cb5314f86c601d07b523ea, type: 3}
+  - {fileID: 4148969413128962344, guid: 0f0be722fe181b547b3b633a57a46941, type: 3}
+  _cntFruitQueue: 0
   _parentQueues: []
   _ofset: {x: 0, y: 0, z: -0.4}
   _distanceFruitInQueue: 1
-  parentFruitQueue: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

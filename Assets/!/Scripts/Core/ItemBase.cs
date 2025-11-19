@@ -19,7 +19,7 @@ namespace LongNC
         bool IsState<T>(params T[] t);
         bool IsType<T>(T t);
         bool IsType<T>(params T[] t);
-        TType GetItemType<TType>();
+        TItemType GetItemType<TItemType>();
         void ChangeState<T>(T t);
     }
     public class ItemBase<TState, TType> : SerializedMonoBehaviour, IItemBase
@@ -59,9 +59,9 @@ namespace LongNC
             return t.Any(IsType);
         }
 
-        public TType GetItemType<TType>()
+        public TItemType GetItemType<TItemType>()
         {
-            return (TType)(object)_type;
+            return (TItemType)(object)_type;
         }
 
         public virtual void ChangeState<T>(T t)

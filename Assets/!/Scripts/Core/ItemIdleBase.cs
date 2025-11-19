@@ -12,9 +12,6 @@ namespace LongNC
         where TState : System.Enum
         where TType : System.Enum
     {
-        [OdinSerialize]
-        private MeshRenderer _meshRenderer;
-        
         public virtual bool OnTake(IItemMovingBase item)
         {
             return false;

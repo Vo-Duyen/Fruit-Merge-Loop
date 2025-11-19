@@ -36,10 +36,15 @@ namespace LongNC.Items
                 case State.AnimGetFruit:
                     var posFruit = TF.position;
                     posFruit.z = 0;
+                    Observer.PostEvent(GameEvent.FruitInPlatform, ((IItemIdleBase) this, _currentItems));
                     Observer.PostEvent(GameEvent.FruitInPlatform, ((IItemIdleBase) this, _currentItems, posFruit, transform.rotation));
                     break;
                 case State.HaveFruit:
-                    Observer.PostEvent(GameEvent.CheckMerge, (IItemIdleBase) this);
+                    if (_currentItems != null)
+                    {
+                        Observer.PostEvent(GameEvent.CheckMerge, _currentItems);
+                        _currentItems = null;
+                    }
                     break;
             }
         }

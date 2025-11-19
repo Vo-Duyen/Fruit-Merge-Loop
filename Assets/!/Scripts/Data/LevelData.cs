@@ -13,7 +13,7 @@ namespace LongNC.Data
         public MapType mapType;
         public List<(int, int)> arrFruitCore = new List<(int, int)>();
         public int cntFruitQueue;
-        public List<int> arrFruit = new List<int>();
+        public List<int> arrFruitQueue = new List<int>();
         public int pointWin;
     }
 
