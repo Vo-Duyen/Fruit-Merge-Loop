@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using DesignPattern.Observer;
 using TMPro;
 using UnityEngine;
@@ -12,45 +13,42 @@ namespace LongNC.UI.Panel
 {
     public class GameplayUI : BaseUIPanel
     {
-        [Title("Info Display")]
-        [OdinSerialize]
+        [Title("Info Display")] [OdinSerialize]
         private TextMeshProUGUI _levelText;
-        [OdinSerialize]
-        private Slider _timeSlider;
-        
-        [Title("Buttons")]
-        [OdinSerialize]
-        private Button _restartButton;
-        [OdinSerialize]
-        private Button _helpButton;
-        [OdinSerialize]
-        private Button _settingButton;
-        
-        [Title("Text")]
-        [OdinSerialize]
-        private TextMeshProUGUI _tipText;
-        
-        private Tween _tween;
 
+        [OdinSerialize] private Slider _timeSlider;
+
+        [Title("Buttons")] [OdinSerialize] private Button _restartButton;
+        [OdinSerialize] private Button _helpButton;
+        [OdinSerialize] private Button _settingButton;
+
+        [Title("Text")] [OdinSerialize] private TextMeshProUGUI _tipText;
+        [OdinSerialize] private TextMeshProUGUI _scoreText;
+
+        [Title("Tutorial")] [OdinSerialize] private Transform _hand;
+        [OdinSerialize] private Transform _posHandStart;
+        [OdinSerialize] private Transform _posHandEnd;
+
+
+        private Tween _tween;
         private Tween _timerTween;
-        
+        private Tween _scoreTween;
+        private Tween _tipTween;
+        private Tween _handTween;
+
         private void Awake()
         {
             SetupButtons();
         }
+
         public void OnRestartTimeSlider(object param)
         {
             if (param is float time)
             {
                 _timeSlider.value = _timeSlider.maxValue;
                 _tween?.Kill();
-                _tween = DOVirtual.Float(0, time, time, t =>
-                {
-                    _timeSlider.value = (time - t) / time;
-                }).SetEase(Ease.Linear).OnComplete(() =>
-                {
-                    Observer.PostEvent(UIEventID.OnLoseGame);
-                });
+                _tween = DOVirtual.Float(0, time, time, t => { _timeSlider.value = (time - t) / time; })
+                    .SetEase(Ease.Linear).OnComplete(() => { Observer.PostEvent(UIEventID.OnLoseGame); });
             }
         }
 
@@ -60,26 +58,26 @@ namespace LongNC.UI.Panel
             _helpButton?.onClick.AddListener(OnHelpClicked);
             _settingButton?.onClick.AddListener(OnSettingClicked);
         }
-        
+
         #region Button Handlers
 
         private void OnRestartClicked()
         {
             Observer.PostEvent(UIEventID.OnRestartClicked, _restartButton.transform);
         }
-        
+
         private void OnHelpClicked()
         {
             Observer.PostEvent(UIEventID.OnHelpClicked, _helpButton.transform);
         }
-        
+
         private void OnSettingClicked()
         {
             Observer.PostEvent(UIEventID.OnSettingClicked, _settingButton.transform);
         }
-        
+
         #endregion
-        
+
         public void UpdateLevel(int level)
         {
             _levelText.text = $"Level {level}";
@@ -87,10 +85,30 @@ namespace LongNC.UI.Panel
             _timerTween = _levelText.transform.DOPunchScale(Vector3.one * 0.5f, 0.5f);
         }
 
+        public void UpdateScore(int score)
+        {
+            _scoreText.text = $"Target\n{score}";
+            _scoreTween?.Kill();
+            _scoreTween = _scoreText.transform.DOPunchScale(Vector3.one * 0.5f, 0.5f);
+        }
+
         public void ShowTip(bool isShow, string tip)
         {
+            _handTween?.Kill();
+            _tipTween?.Kill();
+            _hand?.gameObject.SetActive(isShow);
             _tipText.text = tip;
             _tipText.gameObject.SetActive(isShow);
+            if (isShow)
+            {
+                _tipTween = _tipText.transform.DOScale(Vector3.one * 0.9f, 0.5f).SetEase(Ease.Linear)
+                    .SetLoops(-1, LoopType.Yoyo);
+                _hand!.position = _posHandStart.position;
+                _handTween = _hand.DOMove(_posHandEnd.position, 2f)
+                    .SetEase(Ease.Linear)
+                    .OnStepComplete(() => { _hand.position = _posHandStart.position; })
+                    .SetLoops(-1, LoopType.Restart);
+            }
         }
     }
 }

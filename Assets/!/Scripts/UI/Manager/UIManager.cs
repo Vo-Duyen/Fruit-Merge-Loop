@@ -107,6 +107,11 @@ namespace LongNC.UI.Manager
             _gameplayUI?.UpdateLevel(level);
         }
 
+        public void UpdateScore(int score)
+        {
+            _gameplayUI?.UpdateScore(score);
+        }
+
         public void OnRestartTimer(object param)
         {
             _gameplayUI.OnRestartTimeSlider(param);

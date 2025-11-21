@@ -126,7 +126,7 @@ MonoBehaviour:
       Entry: 8
       Data: 
   levelId: 12
-  mapType: 0
+  mapType: 3
   cntFruitQueue: 2
   arrFruitQueue: 010000000100000005000000030000000400000004000000
   pointWin: 30

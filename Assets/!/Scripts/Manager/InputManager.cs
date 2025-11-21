@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using DesignPattern;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using LongNC.Items;
+using UnityEngine.EventSystems;
 
 namespace LongNC.Cube
 {
@@ -91,22 +93,25 @@ namespace LongNC.Cube
                         _itemMoving.OnClickDown();
                     }
                 }
-                else if (Input.GetMouseButton(0))
+                if (Input.GetMouseButton(0))
                 {
-                    if (_itemMoving is { IsCanMove: true })
+                    if (!IsPointerOverUIElement())
                     {
-                        _itemMoving.OnDrag();
-                        var itemIdle = GetItemIdle();
-                        if (itemIdle == null)
+                        if (_itemMoving is { IsCanMove: true })
                         {
-                            return;
-                        }
+                            _itemMoving.OnDrag();
+                            var itemIdle = GetItemIdle();
+                            if (itemIdle == null)
+                            {
+                                return;
+                            }
 
-                        _itemIdle = itemIdle.GetComponent<IItemIdleBase>();
-                        _itemIdle.OnHover(_itemMoving);
+                            _itemIdle = itemIdle.GetComponent<IItemIdleBase>();
+                            _itemIdle.OnHover(_itemMoving);
+                        }
                     }
                 }
-                else if (Input.GetMouseButtonUp(0))
+                if (Input.GetMouseButtonUp(0) || IsPointerOverUIElement())
                 {
                     if (_itemMoving is { IsCanMove: true })
                     {
@@ -114,6 +119,7 @@ namespace LongNC.Cube
                         if (itemIdle == null)
                         {
                             _itemMoving.OnDrop();
+                            _itemMoving = null;
                             return;
                         }
 
@@ -132,6 +138,27 @@ namespace LongNC.Cube
             }
         }
 
+        private bool IsPointerOverUIElement()
+        {
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current)
+            {
+                position = Input.mousePosition
+            };
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, results);
+
+            foreach (RaycastResult unused in results)
+            {
+                if (unused.gameObject.layer == LayerMask.NameToLayer("UI"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private IEnumerator IEDelay(float time, Action callback)
         {
             yield return WaitForSecondCache.Get(time);
@@ -139,7 +166,6 @@ namespace LongNC.Cube
             callback?.Invoke();
         }
         
-#if UNITY_EDITOR
         [Button]
         public void SetIsCanControl(bool isCanControl = true, float timeDelay = 0f)
         {
@@ -156,6 +182,5 @@ namespace LongNC.Cube
                 }));
             }
         }
-#endif
     }
 }

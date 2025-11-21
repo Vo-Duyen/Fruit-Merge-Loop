@@ -8,7 +8,6 @@ using LongNC.Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
-using UnityEngine.LightTransport;
 
 namespace LongNC
 {

@@ -21,6 +21,7 @@ namespace LongNC.Manager
         {
             RegisterObserver();
             _curLevel = PlayerPrefs.GetInt("CurrentLevel");
+            if (_curLevel <= 0) _curLevel = 1;
             UIManager.Instance.UpdateLevel(_curLevel);
         }
 

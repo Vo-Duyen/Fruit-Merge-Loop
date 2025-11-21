@@ -19,6 +19,9 @@ namespace LongNC.Data
         public int startPoint = -1;
         public int endPoint = -1;
         public int cntSpawnMax = 0;
+
+        public bool isTip = false;
+        public string textTip;
     }
 
     public enum MapType
@@ -27,5 +30,6 @@ namespace LongNC.Data
         Square,
         HorizontalOval,
         VerticalOval,
+        BigSquare,
     }
 }

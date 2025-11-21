@@ -34,7 +34,7 @@ MonoBehaviour:
         mscorlib
     - Name: Item1
       Entry: 3
-      Data: 1
+      Data: 2
     - Name: Item2
       Entry: 3
       Data: 1
@@ -56,3 +56,5 @@ MonoBehaviour:
   startPoint: -1
   endPoint: -1
   cntSpawnMax: 0
+  isTip: 1
+  textTip: Move the Fruit here to merge!

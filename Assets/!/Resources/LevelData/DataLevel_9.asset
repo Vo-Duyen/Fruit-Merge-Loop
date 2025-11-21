@@ -61,11 +61,11 @@ MonoBehaviour:
       Entry: 8
       Data: 
   levelId: 9
-  mapType: 0
+  mapType: 1
   cntFruitQueue: 3
   arrFruitQueue: 01000000010000000200000003000000
   pointWin: 30
-  isRandom: 1
+  isRandom: 0
   startPoint: 1
   endPoint: 6
   cntSpawnMax: 1

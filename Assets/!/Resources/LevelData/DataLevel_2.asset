@@ -95,3 +95,5 @@ MonoBehaviour:
   startPoint: -1
   endPoint: -1
   cntSpawnMax: 0
+  isTip: 1
+  textTip: Fruit after merge will auto merge if possible!

@@ -8,6 +8,7 @@ using DG.Tweening;
 using LongNC.Data;
 using LongNC.Items;
 using LongNC.UI.Data;
+using LongNC.UI.Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -66,6 +67,7 @@ namespace LongNC.Manager
         private GameObject _currentMap;
         private Dictionary<int, int> _checkSpawnFruit = new Dictionary<int, int>();
         private bool _isWinGame;
+        private int _cntMerge;
         
         private ObserverManager<GameEvent> Observer = ObserverManager<GameEvent>.Instance;
         
@@ -115,12 +117,7 @@ namespace LongNC.Manager
                         break;
                     }
                 }
-
-                if (idItemMove == -1)
-                {
-                    Debug.Log("Ga");
-                    return;
-                }
+                
                 // TODO: Check Merge right/left
                 var typeFruit = _arr[idItemMove].itemMove.GetItemType<Fruits.ItemType>();
                 var idRight = idItemMove + 1;
@@ -142,7 +139,7 @@ namespace LongNC.Manager
                 while (idRight != idItemMove)
                 {
                     ++cntRight;
-                    if (_arr[idRight].itemIdle.IsState(Platforms.State.HaveFruit))
+                    if (_arr[idRight].itemIdle.IsState(Platforms.State.HaveFruit) && _arr[idRight].itemMove != null)
                     {
                         isRight = _arr[idRight].itemMove.IsType(typeFruit);
                         break;
@@ -158,7 +155,7 @@ namespace LongNC.Manager
                 while (idLeft != idItemMove)
                 {
                     ++cntLeft;
-                    if (_arr[idLeft].itemIdle.IsState(Platforms.State.HaveFruit))
+                    if (_arr[idLeft].itemIdle.IsState(Platforms.State.HaveFruit) && _arr[idLeft].itemMove != null)
                     {
                         isLeft = _arr[idLeft].itemMove.IsType(typeFruit);
                         break;
@@ -250,6 +247,27 @@ namespace LongNC.Manager
         private void Merge(int idArr, int nextId)
         {
             if (_isWinGame) return;
+            // TODO: Tutorials
+            ++_cntMerge;
+            if (_currentLevel == 1 && _cntMerge == 3)
+            {
+                _arr[0].itemIdle.ChangeState(Platforms.State.Idle);
+                for (var i = 3; i < _arr.Count; ++i)
+                {
+                    _arr[i].itemIdle.ChangeState(Platforms.State.Idle);
+                }
+                UIManager.Instance.ShowTip(false, "");
+            }
+            else if (_currentLevel == 2 && _cntMerge == 1)
+            {
+                for (var i = 2; i < _arr.Count; ++i)
+                {
+                    if (i == 5 || i == 6 || i == 11 || i == 12) continue;
+                    _arr[i].itemIdle.ChangeState(Platforms.State.Idle);
+                }
+                UIManager.Instance.ShowTip(false, "");
+            }
+            
             SoundManager.Instance.PlayFX(SoundId.Merge, 0.1f);
             Observer.PostEvent(GameEvent.AnimMerge, (_arr[idArr], _arr[nextId].itemIdle));
             if (_arr[nextId].itemMove != null)
@@ -308,13 +326,12 @@ namespace LongNC.Manager
                 currentLevel = 1;
                 PlayerPrefs.SetInt("CurrentLevel", currentLevel);
             }
-
             _currentLevel = currentLevel;
         }
 
         public void LoadLevel()
         {
-            _dataCurrentLevel = Resources.Load<LevelData>($"LevelData/DataLevel_{_currentLevel}");
+            _dataCurrentLevel = Resources.Load<LevelData>($"LevelData/DataLevel_{_currentLevel - _currentLevel / 20 * 20}");
         }
 
         public void LoadNextLevel()
@@ -330,7 +347,6 @@ namespace LongNC.Manager
         public void LoadAllObjInLevel()
         {
             _isWinGame = false;
-            _curPoint = 0;
             if (_currentLevelTrans == null)
             {
                 _currentLevelTrans = new GameObject($"Level{_currentLevel}")
@@ -350,6 +366,12 @@ namespace LongNC.Manager
             SpawnFruitInMap();
             SpawnQueueAndFruit();
             SetFruitInQueue();
+            _curPoint = _dataCurrentLevel.pointWin;
+            UIManager.Instance.UpdateScore(_dataCurrentLevel.pointWin * 1000);
+            
+            // TODO: Show Tips
+            UIManager.Instance.ShowTip(_dataCurrentLevel.isTip, _dataCurrentLevel.textTip);
+            _cntMerge = 0;
         }
 
         public void ClearCurrentLevel()
@@ -417,6 +439,23 @@ namespace LongNC.Manager
                     itemMove = null,
                 });
             }
+            
+            // Tutorials
+            if (_currentLevel == 1)
+            {
+                _arr[0].itemIdle.ChangeState(Platforms.State.HaveFruit);
+                for (var i = 3; i < _arr.Count; ++i)
+                {
+                    _arr[i].itemIdle.ChangeState(Platforms.State.HaveFruit);
+                }
+            }
+            else if (_currentLevel == 2)
+            {
+                for (var i = 2; i < _arr.Count; ++i)
+                {
+                    _arr[i].itemIdle.ChangeState(Platforms.State.HaveFruit);
+                }
+            }
         }
         
         private void SpawnFruitInMap()
@@ -435,7 +474,7 @@ namespace LongNC.Manager
             
             foreach (var (idPos, typeFruit) in arrFruitCore)
             {
-                Debug.Log(idPos - 1);
+                // Debug.Log(idPos - 1);
                 var itemIdle = _arr[idPos - 1].itemIdle;
                 var currentPlatform = itemIdle.GetTransform();
                 var posFruit = currentPlatform.position;
@@ -524,29 +563,23 @@ namespace LongNC.Manager
             {
                 var value = new List<InfoFruitInQueue>();
                 var posFruitInQueue = posPlatformQueues[i] + _ofset;
-                var k = 0;
-                if (_dataCurrentLevel.isRandom)
-                {
-                    k = 1;
-                }
-                else
-                {
-                    k = 21;
-                }
+                var k = 20;
+                _checkSpawnFruit.Clear();
 
                 var id = 0;
                 var cntFruitInQueue = 0;
-                for (var cnt = 0; cnt < k; ++cnt)
+                for (var cnt = 0; cnt < (_dataCurrentLevel.isRandom ? 1 : k); ++cnt)
                 {
                     for (var j = i; j < _dataCurrentLevel.arrFruitQueue.Count; j += _cntFruitQueue, ++ id, ++ cntFruitInQueue)
                     {
                         var infoFruitInQueue = new InfoFruitInQueue();
-                        var curId = _dataCurrentLevel.arrFruitQueue[j];
+                        var curId = _dataCurrentLevel.arrFruitQueue[j] - 1;
                         if (cntFruitInQueue < _cntFruitShowInQueue)
                         {
                            var nFruit = PoolingManager.Spawn(_fruitObj[curId], posFruitInQueue, Quaternion.identity,
                                                         _parentQueues[i].transform);
                            infoFruitInQueue.itemMove = nFruit.GetComponent<IItemMovingBase>();
+                           infoFruitInQueue.itemMove.ChangeState(Fruits.State.Ban);
                         }
                         posFruitInQueue += Vector3.down * _distanceFruitInQueue;
                         _checkSpawnFruit[curId] = id;
@@ -558,15 +591,22 @@ namespace LongNC.Manager
 
                 if (_dataCurrentLevel.isRandom)
                 {
-                    for (var j = 0; j < 20; ++j, ++ id, ++ cntFruitInQueue)
+                    for (var j = 0; j < k; ++j, ++ id, ++ cntFruitInQueue)
                     {
                         var idFruit = Random.Range(_dataCurrentLevel.startPoint - 1, _dataCurrentLevel.endPoint);
                         if (_checkSpawnFruit.ContainsKey(idFruit))
                         {
+                            var dem = 100;
                             while (id - _checkSpawnFruit[idFruit] < _dataCurrentLevel.cntSpawnMax + 1)
                             {
                                 idFruit = Random.Range(_dataCurrentLevel.startPoint - 1, _dataCurrentLevel.endPoint);
                                 if (_checkSpawnFruit.ContainsKey(idFruit) == false) break;
+                                --dem;
+                                if (dem == 0)
+                                {
+                                    Debug.Log("Error");
+                                    return;
+                                }
                             }
                         }
 
@@ -577,6 +617,7 @@ namespace LongNC.Manager
                             var nFruit = PoolingManager.Spawn(_fruitObj[idFruit], posFruitInQueue, Quaternion.identity,
                                 _parentQueues[i].transform);
                             infoFruitInQueue.itemMove = nFruit.GetComponent<IItemMovingBase>();
+                            infoFruitInQueue.itemMove.ChangeState(Fruits.State.Ban);
                         }
                         posFruitInQueue += Vector3.down * _distanceFruitInQueue;
 
@@ -611,6 +652,7 @@ namespace LongNC.Manager
                         var tranFruitBefore = queueFruit[_cntFruitShowInQueue - 1].itemMove.GetTransform();
                         var nFruit = PoolingManager.Spawn(_fruitObj[idNewFruit], tranFruitBefore.position + _distanceFruitInQueue * Vector3.down, Quaternion.identity, tranFruitBefore.parent);
                         queueFruit[_cntFruitShowInQueue].itemMove = nFruit.GetComponent<IItemMovingBase>();
+                        queueFruit[_cntFruitShowInQueue].itemMove.ChangeState(Fruits.State.Ban);
                         queueFruit.RemoveAt(0);
                         SetFruitInQueue(false);
                         for (var j = 0; j < queueFruit.Count; ++j)
@@ -629,8 +671,10 @@ namespace LongNC.Manager
 
         private void PlusPoint(int amount)
         {
-            _curPoint += amount;
-            if (_curPoint >= _dataCurrentLevel.pointWin)
+            _curPoint -= amount;
+            if (_curPoint < 0) _curPoint = 0;
+            UIManager.Instance.UpdateScore(_curPoint * 1000);
+            if (_curPoint <= 0)
             {
                 ObserverManager<UIEventID>.Instance.PostEvent(UIEventID.OnWinGame, 0.2f);
                 _isWinGame = true;
