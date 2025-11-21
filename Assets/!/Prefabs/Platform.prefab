@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 3183804441078827225, guid: 0544758a57e7dc446bbfbaeb23206a32, type: 3}
+  - {fileID: 2100000, guid: e02a29fcf9fbdaa46bc8b0e9140f7374, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -137,7 +137,6 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 2137795027110499402}
-    - {fileID: 989347511610756939}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -146,15 +145,12 @@ MonoBehaviour:
     - Name: _state
       Entry: 3
       Data: 0
+    - Name: _type
+      Entry: 3
+      Data: 0
     - Name: _collider
       Entry: 10
       Data: 0
-    - Name: _meshRenderer
-      Entry: 6
-      Data: 
-    - Name: Platforms+_meshRenderer
-      Entry: 10
-      Data: 1
 --- !u!65 &2137795027110499402
 BoxCollider:
   m_ObjectHideFlags: 0

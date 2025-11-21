@@ -54,7 +54,7 @@ namespace LongNC.Items
             if (IsState(State.Idle))
             {
                 var mats = _meshRenderer.materials;
-                mats[0].color = Color.yellow;
+                mats[0].color = ColorUtility.TryParseHtmlString("#FFD500", out var color) ? color : Color.white;
                 if (_coroutine != null) StopCoroutine(_coroutine);
                 _coroutine = StartCoroutine(IERemoveMaterialYellow());
             }

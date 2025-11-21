@@ -438,6 +438,7 @@ namespace LongNC.Manager
                     itemIdle = curItemIdle,
                     itemMove = null,
                 });
+                _arr[i].itemIdle.ChangeState(Platforms.State.Idle);
             }
             
             // Tutorials
