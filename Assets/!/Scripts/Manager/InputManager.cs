@@ -21,10 +21,10 @@ namespace LongNC.Cube
         private IItemIdleBase _itemIdle;
         private IItemMovingBase _itemMoving;
 
-        private void OnEnable()
-        {
-            _isCanControl = true;
-        }
+        // private void OnEnable()
+        // {
+        //     _isCanControl = true;
+        // }
 
         public Transform GetItemIdle()
         {

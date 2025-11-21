@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DesignPattern;
 using DesignPattern.Observer;
 using DG.Tweening;
-// using LongNC.UI.Data;
+using LongNC.UI.Data;
 using UnityEngine;
 
 namespace LongNC.Manager
@@ -11,9 +11,9 @@ namespace LongNC.Manager
     public enum SoundId
     {
         Background,
-        Move,
         Win,
         Lose,
+        Merge,
     }
     public class SoundManager : Singleton<SoundManager>
     {
@@ -22,7 +22,7 @@ namespace LongNC.Manager
         [SerializeField]
         private List<AudioClip> _soundId = new List<AudioClip>();
         
-        // private ObserverManager<UIEventID> Observer => ObserverManager<UIEventID>.Instance;
+        private ObserverManager<UIEventID> Observer => ObserverManager<UIEventID>.Instance;
 
         protected override void Awake()
         {
@@ -32,12 +32,12 @@ namespace LongNC.Manager
 
         private void OnEnable()
         {
-            // Observer.RegisterEvent(UIEventID.OnSoundChanged, OnSoundChange);
+            Observer.RegisterEvent(UIEventID.OnSoundChanged, OnSoundChange);
         }
 
         private void OnDisable()
         {
-            // Observer.RemoveEvent(UIEventID.OnSoundChanged, OnSoundChange);
+            Observer.RemoveEvent(UIEventID.OnSoundChanged, OnSoundChange);
         }
 
         private void OnSoundChange(object param)

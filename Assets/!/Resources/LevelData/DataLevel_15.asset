@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7778a72fea18463cacb8d2c7b9e9a9f4, type: 3}
+  m_Script: {fileID: 11500000, guid: 39f86560416a4bd499eb38d73c02127c, type: 3}
   m_Name: DataLevel_15
   m_EditorClassIdentifier: 
   serializationData:
@@ -27,15 +27,71 @@ MonoBehaviour:
         mscorlib],[System.Int32, mscorlib]], mscorlib]], mscorlib
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 4
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 2
+    - Name: Item2
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 3
+    - Name: Item2
+      Entry: 3
+      Data: 2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 8
+    - Name: Item2
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: System.ValueTuple`2[[System.Int32, mscorlib],[System.Int32, mscorlib]],
+        mscorlib
+    - Name: Item1
+      Entry: 3
+      Data: 9
+    - Name: Item2
+      Entry: 3
+      Data: 6
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 13
       Data: 
     - Name: 
       Entry: 8
       Data: 
-  levelId: 1
-  mapType: 1
+  levelId: 15
+  mapType: 0
   cntFruitQueue: 1
   arrFruitQueue: 0400000005000000030000000100000002000000
   pointWin: 45
+  isRandom: 1
+  startPoint: 1
+  endPoint: 6
+  cntSpawnMax: 3

@@ -15,6 +15,10 @@ namespace LongNC.Data
         public int cntFruitQueue;
         public List<int> arrFruitQueue = new List<int>();
         public int pointWin;
+        public bool isRandom = false;
+        public int startPoint = -1;
+        public int endPoint = -1;
+        public int cntSpawnMax = 0;
     }
 
     public enum MapType

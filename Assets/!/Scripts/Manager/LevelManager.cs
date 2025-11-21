@@ -7,9 +7,11 @@ using DesignPattern.Observer;
 using DG.Tweening;
 using LongNC.Data;
 using LongNC.Items;
+using LongNC.UI.Data;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace LongNC.Manager
 {
@@ -24,15 +26,25 @@ namespace LongNC.Manager
         public IItemIdleBase itemIdle;
         public IItemMovingBase itemMove;
     }
+
+    public class InfoFruitInQueue
+    {
+        public int idFruit;
+        public IItemMovingBase itemMove;
+    }
     public class LevelManager : Singleton<LevelManager>
     {
         [Title("Core")]
+        [ShowInInspector, ReadOnly] private int _curPoint;
         [ShowInInspector, ReadOnly] private List<Info> _arr = new List<Info>();
         [SerializeField] private List<GameObject> _fruitObj = new List<GameObject>();
+        [SerializeField, ReadOnly] private Transform _parentMap;
+        [SerializeField, ReadOnly] private Transform _parentBackground;
         [SerializeField, ReadOnly] private Transform _currentLevelTrans;
         [SerializeField, ReadOnly] private Transform _parentFruitInMap;
         [SerializeField, ReadOnly] private Transform _parentFruitInQueue;
         [SerializeField, ReadOnly] private Transform _parentPlatformQueue;
+        [SerializeField] private int _cntFruitShowInQueue = 10;
         
         [Title("Prefab object")]
         [SerializeField] private GameObject _backgroundObj;
@@ -44,7 +56,7 @@ namespace LongNC.Manager
         
         [Title("Queue Fruit")]
         [SerializeField] private int _cntFruitQueue;
-        [ShowInInspector, ReadOnly] private List<Queue<IItemMovingBase>> _queueFruits = new List<Queue<IItemMovingBase>>();
+        [ShowInInspector, ReadOnly] private List<List<InfoFruitInQueue>> _queueFruits = new List<List<InfoFruitInQueue>>();
         [SerializeField, ReadOnly] private List<GameObject> _parentQueues = new List<GameObject>();
         [SerializeField] private Vector3 _ofset;
         [SerializeField] private float _distanceFruitInQueue;
@@ -52,14 +64,16 @@ namespace LongNC.Manager
         private int _currentLevel;
         private LevelData _dataCurrentLevel;
         private GameObject _currentMap;
+        private Dictionary<int, int> _checkSpawnFruit = new Dictionary<int, int>();
+        private bool _isWinGame;
         
         private ObserverManager<GameEvent> Observer = ObserverManager<GameEvent>.Instance;
         
         private void OnEnable()
         {
-            GetLevel();
-            LoadLevel();
-            LoadAllObjInLevel();
+            // GetLevel();
+            // LoadLevel();
+            // LoadAllObjInLevel();
             Observer.RegisterEvent(GameEvent.CheckMerge, CheckMerge);
             Observer.RegisterEvent(GameEvent.FruitInPlatform, FruitInPlatform);
             Observer.RegisterEvent(GameEvent.NextFruitInQueue, NextFruitInQueue);
@@ -91,6 +105,7 @@ namespace LongNC.Manager
         {
             if (param is IItemMovingBase itemMove)
             {
+                if (_isWinGame) return; 
                 var idItemMove = -1;
                 for (var i = 0; i < _arr.Count; ++i)
                 {
@@ -179,12 +194,29 @@ namespace LongNC.Manager
                 {
                     // Not merge
                     SetFruitInQueue();
+                    
+                    // Check Lose
+                    var isLose = true;
+                    foreach (var info in _arr)
+                    {
+                        if (info.itemMove == null)
+                        {
+                            isLose = false;
+                            break;
+                        }
+                    }
+
+                    if (isLose)
+                    {
+                        ObserverManager<UIEventID>.Instance.PostEvent(UIEventID.OnLoseGame, 0.2f);
+                    }
                 }
             }
         }
 
         private void Merges(int idArr, int cntMerge)
         {
+            if (_isWinGame) return;
             // Debug.Log(cntMerge);
             var sequence = DOTween.Sequence();
             var curId = idArr;
@@ -217,6 +249,8 @@ namespace LongNC.Manager
 
         private void Merge(int idArr, int nextId)
         {
+            if (_isWinGame) return;
+            SoundManager.Instance.PlayFX(SoundId.Merge, 0.1f);
             Observer.PostEvent(GameEvent.AnimMerge, (_arr[idArr], _arr[nextId].itemIdle));
             if (_arr[nextId].itemMove != null)
             {
@@ -244,6 +278,9 @@ namespace LongNC.Manager
                 // Debug.Log("Max fruit");
                 nextItemType = 0;
             }
+
+            // TODO: Point
+            PlusPoint(nextItemType + 1);
             
             var targetTrans = _arr[curId].itemIdle.GetTransform();
             var targetPos = targetTrans.position;
@@ -263,7 +300,7 @@ namespace LongNC.Manager
             CheckMerge(newItemMove);
         }
 
-        private void GetLevel()
+        public void GetLevel()
         {
             var currentLevel = PlayerPrefs.GetInt("CurrentLevel");
             if (currentLevel < 1)
@@ -275,12 +312,12 @@ namespace LongNC.Manager
             _currentLevel = currentLevel;
         }
 
-        private void LoadLevel()
+        public void LoadLevel()
         {
             _dataCurrentLevel = Resources.Load<LevelData>($"LevelData/DataLevel_{_currentLevel}");
         }
 
-        private void LoadNextLevel()
+        public void LoadNextLevel()
         {
             ++_currentLevel;
             if (_currentLevel > 20)
@@ -290,15 +327,24 @@ namespace LongNC.Manager
             LoadLevel();
         }
 
-        private void LoadAllObjInLevel()
+        public void LoadAllObjInLevel()
         {
-            _currentLevelTrans = new GameObject($"Level{_currentLevel}")
+            _isWinGame = false;
+            _curPoint = 0;
+            if (_currentLevelTrans == null)
             {
-                transform =
+                _currentLevelTrans = new GameObject($"Level{_currentLevel}")
                 {
-                    parent = transform,
-                }
-            }.transform;
+                    transform =
+                    {
+                        parent = transform,
+                    }
+                }.transform;
+            }
+            else
+            {
+                _currentLevelTrans.name = $"Level{_currentLevel}";
+            }
             SpawnBackground();
             SpawnMap();
             SpawnFruitInMap();
@@ -306,15 +352,59 @@ namespace LongNC.Manager
             SetFruitInQueue();
         }
 
+        public void ClearCurrentLevel()
+        {
+            PoolingManager.Despawn(_currentMap);
+            foreach (Transform fruitInMap in _parentFruitInMap)
+            {
+                DOTween.Kill(fruitInMap);
+                PoolingManager.Despawn(fruitInMap.gameObject);
+            }
+
+            foreach (Transform platformInQueue in _parentPlatformQueue)
+            {
+                PoolingManager.Despawn(platformInQueue.gameObject);
+            }
+            
+            foreach (Transform fruitInQueue in _parentFruitInQueue)
+            {
+                foreach (Transform fruit in fruitInQueue)
+                {
+                    DOTween.Kill(fruit);
+                    PoolingManager.Despawn(fruit.gameObject);
+                }
+            }
+        }
+
         private void SpawnBackground()
         {
-            PoolingManager.Spawn(_backgroundObj, Vector3.zero, Quaternion.identity, _currentLevelTrans);
+            if (_parentFruitInMap == null)
+            {
+                _parentBackground = new GameObject(name: "ParentBackground")
+                {
+                    transform =
+                    {
+                        parent = _currentLevelTrans,
+                    }
+                }.transform;
+                PoolingManager.Spawn(_backgroundObj, Vector3.zero, Quaternion.identity, _parentBackground);
+            }
         }
 
         private void SpawnMap()
         {
+            if (_parentMap == null)
+            {
+                _parentMap = new GameObject(name: "ParentMap")
+                {
+                    transform =
+                    {
+                        parent = _currentLevelTrans,
+                    }
+                }.transform;
+            }
             var idMap = (int) _dataCurrentLevel.mapType;
-            _currentMap = PoolingManager.Spawn(_maps[idMap], Vector3.forward * 0.4f, Quaternion.identity, _currentLevelTrans);
+            _currentMap = PoolingManager.Spawn(_maps[idMap], Vector3.forward * 0.4f, Quaternion.identity, _parentMap);
             
             // Setup arr
             _arr.Clear();
@@ -331,18 +421,22 @@ namespace LongNC.Manager
         
         private void SpawnFruitInMap()
         {
-            var arrFruitCore = _dataCurrentLevel.arrFruitCore;
-            _parentFruitInMap = new GameObject(name: "ParentFruitInMap")
+            if (_parentFruitInMap == null)
             {
-                transform =
+                _parentFruitInMap = new GameObject(name: "ParentFruitInMap")
                 {
-                    parent = _currentLevelTrans,
-                }
-            }.transform;
+                    transform =
+                    {
+                        parent = _currentLevelTrans,
+                    }
+                }.transform;
+            }
+            var arrFruitCore = _dataCurrentLevel.arrFruitCore;
             
             foreach (var (idPos, typeFruit) in arrFruitCore)
             {
-                var itemIdle = _arr[idPos].itemIdle;
+                Debug.Log(idPos - 1);
+                var itemIdle = _arr[idPos - 1].itemIdle;
                 var currentPlatform = itemIdle.GetTransform();
                 var posFruit = currentPlatform.position;
                 posFruit.z = 0f;
@@ -351,8 +445,8 @@ namespace LongNC.Manager
                 itemMove.ChangeState(Fruits.State.InPlatform);
                 currentFruit.transform.rotation = currentPlatform.rotation;
                 
-                _arr[idPos].itemIdle.ChangeState(Platforms.State.HaveFruit);
-                _arr[idPos].itemMove = itemMove;
+                _arr[idPos - 1].itemIdle.ChangeState(Platforms.State.HaveFruit);
+                _arr[idPos - 1].itemMove = itemMove;
             }
         }
 
@@ -360,15 +454,27 @@ namespace LongNC.Manager
         {
             _cntFruitQueue = _dataCurrentLevel.cntFruitQueue;
 
-            _parentPlatformQueue = new GameObject(name: "ParentPlatformQueue")
+            if (_parentPlatformQueue == null)
             {
-                transform =
+                _parentPlatformQueue = new GameObject(name: "ParentPlatformQueue")
                 {
-                    parent = transform,
-                    position = Vector3.zero,
-                    rotation = Quaternion.identity,
-                }
-            }.transform;
+                    transform =
+                    {
+                        parent = _currentLevelTrans,
+                    }
+                }.transform;
+            }
+
+            if (_parentFruitInQueue == null)
+            {
+                _parentFruitInQueue = new GameObject(name: "ParentFruitInQueue")
+                {
+                    transform =
+                    {
+                        parent = _currentLevelTrans,
+                    }
+                }.transform;
+            }
 
             var posPlatformQueues = new List<Vector3>();
             switch (_cntFruitQueue)
@@ -399,31 +505,83 @@ namespace LongNC.Manager
             
             _queueFruits.Clear();
             _parentQueues.Clear();
-            // var cntShowFruitQueue = 3 * _cntFruitQueue;
-            for (var i = 0; i < _cntFruitQueue; ++i)
+            for (var i = 0; i < _parentFruitInQueue.childCount; ++i)
+            {
+                _parentQueues.Add(_parentFruitInQueue.GetChild(i).gameObject);
+            }
+            for (var i = _parentFruitInQueue.childCount; i < _cntFruitQueue; ++i)
             {
                 _parentQueues.Add(new GameObject($"Queue_{i}")
                 {
                     transform =
                     {
-                        parent = transform,
-                        position = Vector3.zero,
-                        rotation = Quaternion.identity,
+                        parent = _parentFruitInQueue,
                     }
                 });
             }
 
             for (var i = 0; i < _cntFruitQueue; ++i)
             {
-                var value = new Queue<IItemMovingBase>();
-                var posFruitInQueue = _posPlatformQueue + _ofset;
-                for (var j = i; j < _dataCurrentLevel.arrFruitQueue.Count; j += _cntFruitQueue)
+                var value = new List<InfoFruitInQueue>();
+                var posFruitInQueue = posPlatformQueues[i] + _ofset;
+                var k = 0;
+                if (_dataCurrentLevel.isRandom)
                 {
-                    var nFruit = PoolingManager.Spawn(_fruitObj[_dataCurrentLevel.arrFruitQueue[j]], posFruitInQueue, Quaternion.identity,
-                        _parentQueues[i].transform);
-                    posFruitInQueue += Vector3.down * _distanceFruitInQueue;
+                    k = 1;
+                }
+                else
+                {
+                    k = 21;
+                }
 
-                    value.Enqueue(nFruit.GetComponent<IItemMovingBase>());
+                var id = 0;
+                var cntFruitInQueue = 0;
+                for (var cnt = 0; cnt < k; ++cnt)
+                {
+                    for (var j = i; j < _dataCurrentLevel.arrFruitQueue.Count; j += _cntFruitQueue, ++ id, ++ cntFruitInQueue)
+                    {
+                        var infoFruitInQueue = new InfoFruitInQueue();
+                        var curId = _dataCurrentLevel.arrFruitQueue[j];
+                        if (cntFruitInQueue < _cntFruitShowInQueue)
+                        {
+                           var nFruit = PoolingManager.Spawn(_fruitObj[curId], posFruitInQueue, Quaternion.identity,
+                                                        _parentQueues[i].transform);
+                           infoFruitInQueue.itemMove = nFruit.GetComponent<IItemMovingBase>();
+                        }
+                        posFruitInQueue += Vector3.down * _distanceFruitInQueue;
+                        _checkSpawnFruit[curId] = id;
+
+                        infoFruitInQueue.idFruit = curId;
+                        value.Add(infoFruitInQueue);
+                    }
+                }
+
+                if (_dataCurrentLevel.isRandom)
+                {
+                    for (var j = 0; j < 20; ++j, ++ id, ++ cntFruitInQueue)
+                    {
+                        var idFruit = Random.Range(_dataCurrentLevel.startPoint - 1, _dataCurrentLevel.endPoint);
+                        if (_checkSpawnFruit.ContainsKey(idFruit))
+                        {
+                            while (id - _checkSpawnFruit[idFruit] < _dataCurrentLevel.cntSpawnMax + 1)
+                            {
+                                idFruit = Random.Range(_dataCurrentLevel.startPoint - 1, _dataCurrentLevel.endPoint);
+                                if (_checkSpawnFruit.ContainsKey(idFruit) == false) break;
+                            }
+                        }
+
+                        _checkSpawnFruit[idFruit] = id;
+                        var infoFruitInQueue = new InfoFruitInQueue();
+                        if (cntFruitInQueue < _cntFruitShowInQueue)
+                        {
+                            var nFruit = PoolingManager.Spawn(_fruitObj[idFruit], posFruitInQueue, Quaternion.identity,
+                                _parentQueues[i].transform);
+                            infoFruitInQueue.itemMove = nFruit.GetComponent<IItemMovingBase>();
+                        }
+                        posFruitInQueue += Vector3.down * _distanceFruitInQueue;
+
+                        value.Add(infoFruitInQueue);
+                    }
                 }
                 
                 _queueFruits.Add(value);
@@ -434,8 +592,8 @@ namespace LongNC.Manager
         {
             foreach (var queueFruit in _queueFruits)
             {
-                var fruitInQueue = queueFruit.Peek();
-                fruitInQueue.ChangeState(value ? Fruits.State.InQueue : Fruits.State.Ban);
+                var fruitInQueue = queueFruit[0];
+                fruitInQueue.itemMove.ChangeState(value ? Fruits.State.InQueue : Fruits.State.Ban);
             }
         }
 
@@ -443,22 +601,39 @@ namespace LongNC.Manager
         {
             if (param is IItemMovingBase currentFruit)
             {
-                foreach (var queueFruit in _queueFruits)
+                for (var i = 0; i < _queueFruits.Count; ++ i)
                 {
-                    var fruitInQueue = queueFruit.Peek();
+                    var queueFruit = _queueFruits[i];
+                    var fruitInQueue = queueFruit[0].itemMove;
                     if (fruitInQueue == currentFruit)
                     {
-                        queueFruit.Dequeue();
+                        var idNewFruit = queueFruit[_cntFruitShowInQueue].idFruit;
+                        var tranFruitBefore = queueFruit[_cntFruitShowInQueue - 1].itemMove.GetTransform();
+                        var nFruit = PoolingManager.Spawn(_fruitObj[idNewFruit], tranFruitBefore.position + _distanceFruitInQueue * Vector3.down, Quaternion.identity, tranFruitBefore.parent);
+                        queueFruit[_cntFruitShowInQueue].itemMove = nFruit.GetComponent<IItemMovingBase>();
+                        queueFruit.RemoveAt(0);
                         SetFruitInQueue(false);
-                        var queueMove = new Queue<IItemMovingBase>(queueFruit);
-                        while (queueMove.Count > 0)
+                        for (var j = 0; j < queueFruit.Count; ++j)
                         {
-                            var item = queueMove.Dequeue();
-                            item.GetTransform().DOMoveY(item.GetTransform().position.y + 1f, 0.2f);
+                            var item = queueFruit[j].itemMove;
+                            if (item != null)
+                            {
+                                item.GetTransform().DOMoveY(item.GetTransform().position.y + _distanceFruitInQueue, 0.2f);
+                            }
                         }
                         break;
                     }
                 }
+            }
+        }
+
+        private void PlusPoint(int amount)
+        {
+            _curPoint += amount;
+            if (_curPoint >= _dataCurrentLevel.pointWin)
+            {
+                ObserverManager<UIEventID>.Instance.PostEvent(UIEventID.OnWinGame, 0.2f);
+                _isWinGame = true;
             }
         }
     }
