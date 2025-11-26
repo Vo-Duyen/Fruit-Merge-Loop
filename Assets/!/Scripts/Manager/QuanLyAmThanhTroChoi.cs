@@ -15,14 +15,14 @@ namespace LongNC.Manager
         Lose,
         Merge,
     }
-    public class SoundManager : Singleton<SoundManager>
+    public class QuanLyAmThanhTroChoi : DuyNhat<QuanLyAmThanhTroChoi>
     {
         private Dictionary<SoundId, AudioSource> _audioDict = new Dictionary<SoundId, AudioSource>();
         
         [SerializeField]
         private List<AudioClip> _soundId = new List<AudioClip>();
         
-        private ObserverManager<UIEventID> Observer => ObserverManager<UIEventID>.Instance;
+        private ToiLaAi<SuKienTrongGiaoDien> Observer => ToiLaAi<SuKienTrongGiaoDien>.Instance;
 
         protected override void Awake()
         {
@@ -32,12 +32,12 @@ namespace LongNC.Manager
 
         private void OnEnable()
         {
-            Observer.RegisterEvent(UIEventID.OnSoundChanged, OnSoundChange);
+            Observer.DangKy(SuKienTrongGiaoDien.OnSoundChanged, OnSoundChange);
         }
 
         private void OnDisable()
         {
-            Observer.RemoveEvent(UIEventID.OnSoundChanged, OnSoundChange);
+            Observer.HuyDangKy(SuKienTrongGiaoDien.OnSoundChanged, OnSoundChange);
         }
 
         private void OnSoundChange(object param)

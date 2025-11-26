@@ -8,7 +8,7 @@ namespace LongNC
         void OnHover(IItemMovingBase item);
         bool OnTake(IItemMovingBase item);
     }
-    public class ItemIdleBase<TState, TType> : ItemBase<TState,TType>, IItemIdleBase
+    public class VatPhamDungImCoBan<TState, TType> : VatPhamCoBan<TState,TType>, IItemIdleBase
         where TState : System.Enum
         where TType : System.Enum
     {

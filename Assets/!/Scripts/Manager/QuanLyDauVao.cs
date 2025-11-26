@@ -15,9 +15,9 @@ namespace LongNC.Cube
         Transform GetItemMoving();
     }
     
-    public class InputManager : Singleton<InputManager>, IInputManager
+    public class QuanLyDauVao : DuyNhat<QuanLyDauVao>, IInputManager
     {
-        private bool _isCanControl;
+        private bool coDuocDieuKhien;
         private RaycastHit[] _hits = new RaycastHit[10];
         private Coroutine _coroutine;
         private IItemIdleBase _itemIdle;
@@ -78,7 +78,7 @@ namespace LongNC.Cube
 
         private void Update()
         {
-            if (_isCanControl)
+            if (coDuocDieuKhien)
             {
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -161,7 +161,7 @@ namespace LongNC.Cube
 
         private IEnumerator IEDelay(float time, Action callback)
         {
-            yield return WaitForSecondCache.Get(time);
+            yield return ToiChoBan.Get(time);
 
             callback?.Invoke();
         }
@@ -171,13 +171,13 @@ namespace LongNC.Cube
         {
             if (timeDelay == 0f)
             {
-                _isCanControl = isCanControl;
+                coDuocDieuKhien = isCanControl;
             }
             else
             {
                 _coroutine ??= StartCoroutine(IEDelay(timeDelay, () =>
                 {
-                    _isCanControl = isCanControl;
+                    coDuocDieuKhien = isCanControl;
                     _coroutine = null;
                 }));
             }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace LongNC.Items
 {
-    public class Platforms : ItemIdleBase<Platforms.State, Platforms.ItemType>
+    public class Nen : VatPhamDungImCoBan<Nen.State, Nen.ItemType>
     {
         public enum State
         {
@@ -36,13 +36,13 @@ namespace LongNC.Items
                 case State.AnimGetFruit:
                     var posFruit = TF.position;
                     posFruit.z = 0;
-                    Observer.PostEvent(GameEvent.FruitInPlatform, ((IItemIdleBase) this, _currentItems));
-                    Observer.PostEvent(GameEvent.FruitInPlatform, ((IItemIdleBase) this, _currentItems, posFruit, transform.rotation));
+                    Observer.PhatSuKien(GameEvent.FruitInPlatform, ((IItemIdleBase) this, _currentItems));
+                    Observer.PhatSuKien(GameEvent.FruitInPlatform, ((IItemIdleBase) this, _currentItems, posFruit, transform.rotation));
                     break;
                 case State.HaveFruit:
                     if (_currentItems != null)
                     {
-                        Observer.PostEvent(GameEvent.CheckMerge, _currentItems);
+                        Observer.PhatSuKien(GameEvent.CheckMerge, _currentItems);
                         _currentItems = null;
                     }
                     break;
@@ -62,7 +62,7 @@ namespace LongNC.Items
 
         private IEnumerator IERemoveMaterialYellow()
         {
-            yield return WaitForSecondCache.Get(0.1f);
+            yield return ToiChoBan.Get(0.1f);
             
             var mats = _meshRenderer.materials;
             mats[0].color = Color.white;
@@ -70,10 +70,10 @@ namespace LongNC.Items
 
         public override bool OnTake(IItemMovingBase item)
         {
-            if (item is Fruits && item.IsState(Fruits.State.InQueue) && IsState(State.Idle))
+            if (item is Qua && item.IsState(Qua.State.InQueue) && IsState(State.Idle))
             {
                 _currentItems = item;
-                item.ChangeState(Fruits.State.AnimInPlatform);
+                item.ChangeState(Qua.State.AnimInPlatform);
                 ChangeState(State.AnimGetFruit);
                 return true;
             }

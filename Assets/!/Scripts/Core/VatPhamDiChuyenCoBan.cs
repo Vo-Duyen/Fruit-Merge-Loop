@@ -14,7 +14,7 @@ namespace LongNC
         void OnBack();
         void OnSavePoint(float timeDelay = 0f);
     }
-    public class ItemMovingBase<TState, TType> : ItemBase<TState, TType>, IItemMovingBase
+    public class VatPhamDiChuyenCoBan<TState, TType> : VatPhamCoBan<TState, TType>, IItemMovingBase
         where TState : System.Enum
         where TType : System.Enum
     {

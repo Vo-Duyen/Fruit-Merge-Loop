@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DesignPattern.Observer;
+using DG.Tweening;
 using LongNC.UI.Data;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -7,13 +8,13 @@ using UnityEngine.UI;
 
 namespace LongNC.UI.Panel
 {
-    public class HelpUI : BaseUIPanel
+    public class GiaoDienChoiLai : BangGiaoDienCoBan
     {
-        [Title("Close Settings")]
+        [Title("Buttons")]
         [OdinSerialize]
         private Button _closeButton;
         [OdinSerialize]
-        private Button _thankButton;
+        private Button _restartButton;
 
         private void Awake()
         {
@@ -23,12 +24,17 @@ namespace LongNC.UI.Panel
         private void SetupButtons()
         {
             _closeButton?.onClick.AddListener(OnCloseButtonClicked);
-            _thankButton?.onClick.AddListener(OnCloseButtonClicked);
+            _restartButton?.onClick.AddListener(OnRestartButtonClicked);
         }
 
         private void OnCloseButtonClicked()
         {
-            Observer.PostEvent(UIEventID.OnCloseHelpClicked, _closeButton);
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnCloseRestartClicked, _closeButton);
+        }
+
+        private void OnRestartButtonClicked()
+        {
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnRestartButtonClicked, _restartButton);
         }
     }
 }

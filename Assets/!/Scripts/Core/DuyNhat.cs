@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DesignPattern
 {
-    public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+    public class DuyNhat<T> : MonoBehaviour where T : MonoBehaviour
     {
         private static T _instance;
         public static bool DontDestroy { get; set; }

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace LongNC.UI.Panel
 {
-     public class WinUI : BaseUIPanel
+     public class GiaoDienChienThang : BangGiaoDienCoBan
     {
         [Title("Display")]
         [OdinSerialize] 
@@ -37,7 +37,7 @@ namespace LongNC.UI.Panel
         
         private void OnNextLevelClicked()
         {
-            Observer.PostEvent(UIEventID.OnNextLevelButtonClicked, _nextLevelButton.transform);
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnNextLevelButtonClicked, _nextLevelButton.transform);
         }
         
         #endregion

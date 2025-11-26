@@ -1,6 +1,6 @@
 ﻿namespace LongNC.UI.Data
 {
-    public enum UIEventID
+    public enum SuKienTrongGiaoDien
     {
         // Game State Events
         OnStartGame,

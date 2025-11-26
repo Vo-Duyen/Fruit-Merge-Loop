@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace DesignPattern.ObjectPool
 {
-    public static class PoolingManager
+    public static class DungLai
     {
         private const int DefaultPoolSize = 3;
         private static Dictionary<int, Pool> _pools;

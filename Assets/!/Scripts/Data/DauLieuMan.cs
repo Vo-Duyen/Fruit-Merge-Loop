@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 namespace LongNC.Data
 {
     [CreateAssetMenu(fileName = "DataLevel0", menuName = "Data/New Data Level")]
-    public class LevelData : SerializedScriptableObject
+    public class DauLieuMan : SerializedScriptableObject
     {
         public int levelId;
         public MapType mapType;

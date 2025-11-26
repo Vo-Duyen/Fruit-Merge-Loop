@@ -11,7 +11,7 @@ using UnityEngine;
 namespace LongNC.UI.Panel
 {
     [RequireComponent(typeof(CanvasGroup))]
-     public abstract class BaseUIPanel : SerializedMonoBehaviour
+     public abstract class BangGiaoDienCoBan : SerializedMonoBehaviour
     {
         [Title("Core")]
         [OdinSerialize] 
@@ -23,7 +23,7 @@ namespace LongNC.UI.Panel
         private Dictionary<Transform, Vector3> _arrScale =
             new Dictionary<Transform, Vector3>();
         
-        protected ObserverManager<UIEventID> Observer => ObserverManager<UIEventID>.Instance;
+        protected ToiLaAi<SuKienTrongGiaoDien> Observer => ToiLaAi<SuKienTrongGiaoDien>.Instance;
 
         public virtual void Show(bool immediate = false)
         {

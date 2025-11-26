@@ -21,7 +21,7 @@ namespace LongNC
         TItemType GetItemType<TItemType>();
         void ChangeState<T>(T t);
     }
-    public class ItemBase<TState, TType> : SerializedMonoBehaviour, IItemBase
+    public class VatPhamCoBan<TState, TType> : SerializedMonoBehaviour, IItemBase
         where TState : Enum
         where TType : Enum
     {
@@ -29,7 +29,7 @@ namespace LongNC
         [OdinSerialize] protected TType _type;
         [OdinSerialize] protected Collider _collider;
         
-        protected ObserverManager<GameEvent> Observer = ObserverManager<GameEvent>.Instance;
+        protected ToiLaAi<GameEvent> Observer = ToiLaAi<GameEvent>.Instance;
 
         public Transform TF => transform;
 

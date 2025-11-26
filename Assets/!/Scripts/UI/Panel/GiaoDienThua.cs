@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace LongNC.UI.Panel
 {
-    public class LoseUI : BaseUIPanel
+    public class GiaoDienThua : BangGiaoDienCoBan
     {
         [Title("Button")]
         [OdinSerialize]
@@ -27,7 +27,7 @@ namespace LongNC.UI.Panel
         
         private void OnTryAgainButtonClicked()
         {
-            Observer.PostEvent(UIEventID.OnTryAgainButtonClicked, _tryAgainButton.transform);
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnTryAgainButtonClicked, _tryAgainButton.transform);
         }
     }
 }

@@ -2,12 +2,12 @@
 
 namespace LongNC.UI.Data
 {
-    public class TimeData : UIEventData
+    public class DuLieuThoiGian : DuLieuTrongGiaoDien
     {
         public float CurrentTime { get; set; }
         public float MaxTime { get; set; }
         
-        public TimeData(float currentTime, float maxTime)
+        public DuLieuThoiGian(float currentTime, float maxTime)
         {
             CurrentTime = currentTime;
             MaxTime = maxTime;

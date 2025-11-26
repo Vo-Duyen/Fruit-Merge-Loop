@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace LongNC.Items
 {
-    public class Fruits : ItemMovingBase<Fruits.State, Fruits.ItemType>
+    public class Qua : VatPhamDiChuyenCoBan<Qua.State, Qua.ItemType>
     {
         public enum State
         {
@@ -39,27 +39,27 @@ namespace LongNC.Items
             base.OnEnable();
             AnimSpawn();
             
-            Observer.RegisterEvent(GameEvent.FruitInPlatform, FruitInPlatform);
+            Observer.DangKy(GameEvent.FruitInPlatform, FruitInPlatform);
             // Observer.RegisterEvent(GameEvent.MergeFruit, MergerFruit);
-            Observer.RegisterEvent(GameEvent.AnimMerge, AnimMerge);
+            Observer.DangKy(GameEvent.AnimMerge, AnimMerge);
         }
 
         private void OnDisable()
         {
-            Observer.RemoveEvent(GameEvent.FruitInPlatform, FruitInPlatform);
+            Observer.HuyDangKy(GameEvent.FruitInPlatform, FruitInPlatform);
             // Observer.RemoveEvent(GameEvent.MergeFruit, MergerFruit);
-            Observer.RemoveEvent(GameEvent.AnimMerge, AnimMerge);
+            Observer.HuyDangKy(GameEvent.AnimMerge, AnimMerge);
             
             AnimDespawn();
         }
 
         private void FruitInPlatform(object param)
         {
-            if (param is (IItemIdleBase itemIdle, IItemMovingBase item, Vector3 pos, Quaternion rot) && (Fruits)item == this && IsState(State.AnimInPlatform))
+            if (param is (IItemIdleBase itemIdle, IItemMovingBase item, Vector3 pos, Quaternion rot) && (Qua)item == this && IsState(State.AnimInPlatform))
             {
                 AnimInX(pos, rot, 0.2f, () =>
                 {
-                    itemIdle.ChangeState(Platforms.State.HaveFruit);
+                    itemIdle.ChangeState(Nen.State.HaveFruit);
                 });
             }
         }
@@ -71,7 +71,7 @@ namespace LongNC.Items
 
         private void AnimMerge(object param)
         {
-            if (param is (Info info, IItemIdleBase targetMerge) && (Fruits)info.itemMove == this)
+            if (param is (Info info, IItemIdleBase targetMerge) && (Qua)info.itemMove == this)
             {
                 _itemIdleTargetMerge = targetMerge;
                 ChangeState(State.AnimMerge);
@@ -92,7 +92,7 @@ namespace LongNC.Items
                     break;
                 case State.AnimInPlatform:
                     _collider.enabled = false;
-                    Observer.PostEvent(GameEvent.NextFruitInQueue, (IItemMovingBase) this);
+                    Observer.PhatSuKien(GameEvent.NextFruitInQueue, (IItemMovingBase) this);
                     break;
                 case State.InPlatform:
                     _collider.enabled = false;

@@ -1,6 +1,6 @@
 ﻿namespace LongNC.UI.Data
 {
-    public class UIEventData
+    public class DuLieuTrongGiaoDien
     {
         
     }

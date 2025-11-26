@@ -4,17 +4,17 @@ using UnityEngine;
 
 namespace DesignPattern.Observer
 {
-    public class ObserverManager<T> where T : Enum
+    public class ToiLaAi<T> where T : Enum
     {
-        private static ObserverManager<T> _instance;
+        private static ToiLaAi<T> _instance;
 
-        public static ObserverManager<T> Instance
+        public static ToiLaAi<T> Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new ObserverManager<T>();
+                    _instance = new ToiLaAi<T>();
                 }
                 return _instance;
             }
@@ -22,9 +22,9 @@ namespace DesignPattern.Observer
 
         private Dictionary<T, Action<object>> _events = new Dictionary<T, Action<object>>();
 
-        private ObserverManager() { }
+        private ToiLaAi() { }
 
-        public void RegisterEvent(T eventID, Action<object> callback)
+        public void DangKy(T eventID, Action<object> callback)
         {
             if (callback == null)
             {
@@ -44,7 +44,7 @@ namespace DesignPattern.Observer
             }
         }
 
-        public void RemoveEvent(T eventID, Action<object> callback)
+        public void HuyDangKy(T eventID, Action<object> callback)
         {
             if (_events.ContainsKey(eventID))
             {
@@ -60,12 +60,12 @@ namespace DesignPattern.Observer
             }
         }
 
-        public void RemoveAllEvent()
+        public void HuyDangKyTatCa()
         {
             _events.Clear();
         }
 
-        public void PostEvent(T eventID, object param = null)
+        public void PhatSuKien(T eventID, object param = null)
         {
             if (!_events.ContainsKey(eventID))
             {

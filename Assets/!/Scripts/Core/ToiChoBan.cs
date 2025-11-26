@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LongNC
 {
-    public static class WaitForSecondCache
+    public static class ToiChoBan
     {
         private static Dictionary<float, WaitForSeconds> cache = new Dictionary<float, WaitForSeconds>();
 

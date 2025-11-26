@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace LongNC.UI.Panel
 {
-    public class SettingUI : BaseUIPanel
+    public class GiaoDienCaiDat : BangGiaoDienCoBan
     {
         [Title("Sound")]
         [OdinSerialize]
@@ -61,12 +61,12 @@ namespace LongNC.UI.Panel
 
         private void OnCloseButtonClicked()
         {
-            Observer.PostEvent(UIEventID.OnCloseSettingClicked, _closeButton.transform);
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnCloseSettingClicked, _closeButton.transform);
         }
 
         private void OnSliderValueChanged(float value)
         {
-            Observer.PostEvent(UIEventID.OnSoundChanged, value);
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnSoundChanged, value);
         }
 
         #endregion

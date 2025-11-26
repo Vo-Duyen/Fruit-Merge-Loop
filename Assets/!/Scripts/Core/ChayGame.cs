@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Loading : MonoBehaviour
+public class ChayGame : MonoBehaviour
 {
     public Slider _slider;
     public float _timeLoading;
@@ -15,7 +15,7 @@ public class Loading : MonoBehaviour
 
     private void Start()
     {
-        SoundManager.Instance.PlayFX(SoundId.Background, true);
+        QuanLyAmThanhTroChoi.Instance.PlayFX(SoundId.Background, true);
         var loadScreen = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
         if (loadScreen != null) loadScreen.allowSceneActivation = false;
 

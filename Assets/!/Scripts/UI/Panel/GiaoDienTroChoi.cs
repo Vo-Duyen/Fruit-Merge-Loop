@@ -11,7 +11,7 @@ using Sirenix.Serialization;
 
 namespace LongNC.UI.Panel
 {
-    public class GameplayUI : BaseUIPanel
+    public class GiaoDienTroChoi : BangGiaoDienCoBan
     {
         [Title("Info Display")] [OdinSerialize]
         private TextMeshProUGUI _levelText;
@@ -48,7 +48,7 @@ namespace LongNC.UI.Panel
                 _timeSlider.value = _timeSlider.maxValue;
                 _tween?.Kill();
                 _tween = DOVirtual.Float(0, time, time, t => { _timeSlider.value = (time - t) / time; })
-                    .SetEase(Ease.Linear).OnComplete(() => { Observer.PostEvent(UIEventID.OnLoseGame); });
+                    .SetEase(Ease.Linear).OnComplete(() => { Observer.PhatSuKien(SuKienTrongGiaoDien.OnLoseGame); });
             }
         }
 
@@ -63,17 +63,17 @@ namespace LongNC.UI.Panel
 
         private void OnRestartClicked()
         {
-            Observer.PostEvent(UIEventID.OnRestartClicked, _restartButton.transform);
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnRestartClicked, _restartButton.transform);
         }
 
         private void OnHelpClicked()
         {
-            Observer.PostEvent(UIEventID.OnHelpClicked, _helpButton.transform);
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnHelpClicked, _helpButton.transform);
         }
 
         private void OnSettingClicked()
         {
-            Observer.PostEvent(UIEventID.OnSettingClicked, _settingButton.transform);
+            Observer.PhatSuKien(SuKienTrongGiaoDien.OnSettingClicked, _settingButton.transform);
         }
 
         #endregion
