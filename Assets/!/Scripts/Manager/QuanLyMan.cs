@@ -331,16 +331,13 @@ namespace LongNC.Manager
 
         public void LayDuLieuManHienTai()
         {
-            _dataCurrentLevel = Resources.Load<DauLieuMan>($"LevelData/DataLevel_{_currentLevel - _currentLevel / 20 * 20}");
+            var curLevel = _currentLevel % 20 == 0 ? 20 : _currentLevel % 20;
+            _dataCurrentLevel = Resources.Load<DauLieuMan>($"LevelData/DataLevel_{curLevel}");
         }
 
         public void LayDuLieuManTiep()
         {
             ++_currentLevel;
-            if (_currentLevel > 20)
-            {
-                _currentLevel = 1;
-            }
             LayDuLieuManHienTai();
         }
 
@@ -370,7 +367,11 @@ namespace LongNC.Manager
             QuanLyGiaoDien.Instance.UpdateScore(_dataCurrentLevel.pointWin * 1000);
             
             // TODO: Show Tips
-            QuanLyGiaoDien.Instance.ShowTip(_dataCurrentLevel.isTip, _dataCurrentLevel.textTip);
+            if (_currentLevel < 20)
+            {
+                QuanLyGiaoDien.Instance.ShowTip(_dataCurrentLevel.isTip, _dataCurrentLevel.textTip);
+                
+            }
             _cntMerge = 0;
         }
 
@@ -564,7 +565,7 @@ namespace LongNC.Manager
             {
                 var value = new List<InfoFruitInQueue>();
                 var posFruitInQueue = posPlatformQueues[i] + _ofset;
-                var k = 20;
+                var k = 50;
                 _checkSpawnFruit.Clear();
 
                 var id = 0;
@@ -598,6 +599,7 @@ namespace LongNC.Manager
                         if (_checkSpawnFruit.ContainsKey(idFruit))
                         {
                             var dem = 100;
+                                // Debug.Log((_dataCurrentLevel.startPoint - 1, _dataCurrentLevel.endPoint));
                             while (id - _checkSpawnFruit[idFruit] < _dataCurrentLevel.cntSpawnMax + 1)
                             {
                                 idFruit = Random.Range(_dataCurrentLevel.startPoint - 1, _dataCurrentLevel.endPoint);
@@ -610,9 +612,11 @@ namespace LongNC.Manager
                                 }
                             }
                         }
-
                         _checkSpawnFruit[idFruit] = id;
-                        var infoFruitInQueue = new InfoFruitInQueue();
+                        var infoFruitInQueue = new InfoFruitInQueue()
+                        {
+                            idFruit = idFruit,
+                        };
                         if (cntFruitInQueue < _cntFruitShowInQueue)
                         {
                             var nFruit = DungLai.Spawn(_fruitObj[idFruit], posFruitInQueue, Quaternion.identity,

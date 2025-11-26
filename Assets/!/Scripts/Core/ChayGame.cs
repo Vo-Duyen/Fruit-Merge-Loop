@@ -16,6 +16,8 @@ public class ChayGame : MonoBehaviour
     private void Start()
     {
         QuanLyAmThanhTroChoi.Instance.PlayFX(SoundId.Background, true);
+        
+        
         var loadScreen = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
         if (loadScreen != null) loadScreen.allowSceneActivation = false;
 

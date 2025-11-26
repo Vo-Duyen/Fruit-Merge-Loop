@@ -24,6 +24,8 @@ namespace LongNC.Manager
         
         private ToiLaAi<SuKienTrongGiaoDien> Observer => ToiLaAi<SuKienTrongGiaoDien>.Instance;
 
+        private bool _isVolumeCheck = false;
+
         protected override void Awake()
         {
             DontDestroy = true;
@@ -64,11 +66,21 @@ namespace LongNC.Manager
                 _audioDict[soundId].clip = _soundId[(int) soundId];
             }
             var volume = PlayerPrefs.GetFloat("VolumeAll");
-            var isMute = PlayerPrefs.GetString("IsMute");
-            if (isMute != "true")
+            var isVolumeCheck = PlayerPrefs.GetFloat("IsVolumeCheck");
+            if (isVolumeCheck == 0)
+            {
+                _isVolumeCheck = false;
+                PlayerPrefs.SetFloat("IsVolumeCheck", 1);
+            }
+            else
+            {
+                _isVolumeCheck = true;
+            }
+            if (_isVolumeCheck == false)
             {
                 volume = 1;
-                PlayerPrefs.SetString("IsMute", "true");
+                _isVolumeCheck = true;
+                SetVolume(volume);
             }
             if (volume < 0 || volume > 1)
             {
